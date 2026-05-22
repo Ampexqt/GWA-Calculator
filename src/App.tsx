@@ -6,7 +6,10 @@ import {
   Plus,
   Trash2,
   BookOpen,
-  AlertTriangle
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  Circle
 } from 'lucide-react';
 
 interface Subject {
@@ -21,6 +24,12 @@ interface SemesterData {
   year: string;
   semester: string;
   subjects: Subject[];
+}
+
+interface Settings {
+  systemType: 'semestral' | 'trimester';
+  includeSummer: boolean;
+  setupCompleted: boolean;
 }
 
 const INITIAL_SUBJECTS: Subject[] = [
@@ -40,7 +49,24 @@ const INITIAL_SEMESTERS: SemesterData[] = [
   }
 ];
 
+const DEFAULT_SETTINGS: Settings = {
+  systemType: 'semestral',
+  includeSummer: true,
+  setupCompleted: false
+};
+
 export function App() {
+  const [settings, setSettings] = useState<Settings>(() => {
+    const saved = localStorage.getItem('gwa-calculator-data');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.settings) return parsed.settings;
+      } catch (e) {}
+    }
+    return DEFAULT_SETTINGS;
+  });
+
   const [semesters, setSemesters] = useState<SemesterData[]>(() => {
     const saved = localStorage.getItem('gwa-calculator-data');
     if (saved) {
@@ -76,30 +102,49 @@ export function App() {
   useEffect(() => {
     const dataToSave = {
       data: semesters,
+      settings: settings,
       timestamp: new Date().getTime()
     };
     localStorage.setItem('gwa-calculator-data', JSON.stringify(dataToSave));
-  }, [semesters]);
+  }, [semesters, settings]);
 
   const addSemester = () => {
     let nextYear = '1st Year';
-    let nextSemester = '1st Semester';
+    let nextSemester = settings.systemType === 'trimester' ? '1st Trimester' : '1st Semester';
 
     if (semesters.length > 0) {
       const lastSem = semesters[semesters.length - 1];
       nextYear = lastSem.year;
       
-      if (lastSem.semester === '1st Semester') {
-        nextSemester = '2nd Semester';
+      if (settings.systemType === 'trimester') {
+        if (lastSem.semester === '1st Trimester') {
+          nextSemester = '2nd Trimester';
+        } else if (lastSem.semester === '2nd Trimester') {
+          nextSemester = '3rd Trimester';
+        } else {
+          nextSemester = '1st Trimester';
+          const yearMatch = lastSem.year.match(/^(\d)/);
+          if (yearMatch) {
+            const nextYearNum = parseInt(yearMatch[1], 10) + 1;
+            if (nextYearNum === 2) nextYear = '2nd Year';
+            else if (nextYearNum === 3) nextYear = '3rd Year';
+            else if (nextYearNum === 4) nextYear = '4th Year';
+            else if (nextYearNum >= 5) nextYear = '5th Year';
+          }
+        }
       } else {
-        nextSemester = '1st Semester';
-        const yearMatch = lastSem.year.match(/^(\d)/);
-        if (yearMatch) {
-          const nextYearNum = parseInt(yearMatch[1], 10) + 1;
-          if (nextYearNum === 2) nextYear = '2nd Year';
-          else if (nextYearNum === 3) nextYear = '3rd Year';
-          else if (nextYearNum === 4) nextYear = '4th Year';
-          else if (nextYearNum >= 5) nextYear = '5th Year';
+        if (lastSem.semester === '1st Semester') {
+          nextSemester = '2nd Semester';
+        } else {
+          nextSemester = '1st Semester';
+          const yearMatch = lastSem.year.match(/^(\d)/);
+          if (yearMatch) {
+            const nextYearNum = parseInt(yearMatch[1], 10) + 1;
+            if (nextYearNum === 2) nextYear = '2nd Year';
+            else if (nextYearNum === 3) nextYear = '3rd Year';
+            else if (nextYearNum === 4) nextYear = '4th Year';
+            else if (nextYearNum >= 5) nextYear = '5th Year';
+          }
         }
       }
     }
@@ -158,7 +203,7 @@ export function App() {
       {
         id: crypto.randomUUID(),
         year: '1st Year',
-        semester: '1st Semester',
+        semester: settings.systemType === 'trimester' ? '1st Trimester' : '1st Semester',
         subjects: [{ id: crypto.randomUUID(), name: '', units: 3, grade: '' }]
       }
     ]);
@@ -170,6 +215,8 @@ export function App() {
     let validSubjectsCount = 0;
     
     semesters.forEach(sem => {
+      if (!settings.includeSummer && sem.semester === 'Summer') return;
+
       sem.subjects.forEach((sub) => {
         const units = Number(sub.units);
         const grade = Number(sub.grade);
@@ -187,7 +234,7 @@ export function App() {
       totalUnits: validUnits,
       totalSubjects: validSubjectsCount
     };
-  }, [semesters]);
+  }, [semesters, settings.includeSummer]);
 
   const duplicateSubjects = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -211,9 +258,93 @@ export function App() {
     return counts;
   }, [semesters]);
 
+  if (!settings.setupCompleted) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center p-6 text-[#0F172A] font-sans">
+        <div className="bg-white rounded-[20px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#E2E8F0] p-8 md:p-10 max-w-xl w-full">
+          <div className="w-12 h-12 rounded-xl bg-[#111827] flex items-center justify-center text-white shadow-md mb-6">
+            <Calculator className="w-6 h-6" />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight mb-2">Welcome to GWA Calculator</h1>
+          <p className="text-[#64748B] mb-8 text-[15px]">Before we begin, let's set up your university's grading system template.</p>
+          
+          <div className="space-y-8">
+            <div>
+              <label className="block text-[14px] font-medium text-[#0F172A] mb-3">1. Which term system does your university use?</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button
+                  onClick={() => setSettings({...settings, systemType: 'semestral'})}
+                  className={`flex items-center p-4 border rounded-xl text-left transition-all ${settings.systemType === 'semestral' ? 'border-[#0F172A] bg-[#F8FAFC] shadow-sm' : 'border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC]/50'}`}
+                >
+                  <div className="flex-1">
+                    <div className="font-medium text-[14px] text-[#0F172A]">Semestral System</div>
+                    <div className="text-[13px] text-[#64748B] mt-0.5">2 semesters per year</div>
+                  </div>
+                  {settings.systemType === 'semestral' ? <CheckCircle2 className="w-5 h-5 text-[#0F172A]" /> : <Circle className="w-5 h-5 text-[#94A3B8]" />}
+                </button>
+                <button
+                  onClick={() => setSettings({...settings, systemType: 'trimester'})}
+                  className={`flex items-center p-4 border rounded-xl text-left transition-all ${settings.systemType === 'trimester' ? 'border-[#0F172A] bg-[#F8FAFC] shadow-sm' : 'border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC]/50'}`}
+                >
+                  <div className="flex-1">
+                    <div className="font-medium text-[14px] text-[#0F172A]">Trimester Option</div>
+                    <div className="text-[13px] text-[#64748B] mt-0.5">3 terms per year</div>
+                  </div>
+                  {settings.systemType === 'trimester' ? <CheckCircle2 className="w-5 h-5 text-[#0F172A]" /> : <Circle className="w-5 h-5 text-[#94A3B8]" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[14px] font-medium text-[#0F172A] mb-3">2. Should the Summer Term be included in your Cumulative GWA?</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button
+                  onClick={() => setSettings({...settings, includeSummer: true})}
+                  className={`flex items-center p-4 border rounded-xl text-left transition-all ${settings.includeSummer ? 'border-[#0F172A] bg-[#F8FAFC] shadow-sm' : 'border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC]/50'}`}
+                >
+                  <div className="flex-1">
+                    <div className="font-medium text-[14px] text-[#0F172A]">Yes, include it</div>
+                    <div className="text-[13px] text-[#64748B] mt-0.5">Factor summer grades</div>
+                  </div>
+                  {settings.includeSummer ? <CheckCircle2 className="w-5 h-5 text-[#0F172A]" /> : <Circle className="w-5 h-5 text-[#94A3B8]" />}
+                </button>
+                <button
+                  onClick={() => setSettings({...settings, includeSummer: false})}
+                  className={`flex items-center p-4 border rounded-xl text-left transition-all ${!settings.includeSummer ? 'border-[#0F172A] bg-[#F8FAFC] shadow-sm' : 'border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC]/50'}`}
+                >
+                  <div className="flex-1">
+                    <div className="font-medium text-[14px] text-[#0F172A]">No, exclude it</div>
+                    <div className="text-[13px] text-[#64748B] mt-0.5">Ignore summer grades</div>
+                  </div>
+                  {!settings.includeSummer ? <CheckCircle2 className="w-5 h-5 text-[#0F172A]" /> : <Circle className="w-5 h-5 text-[#94A3B8]" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              setSettings({...settings, setupCompleted: true});
+              // Ensure default semester name matches template if it's the first time
+              if (settings.systemType === 'trimester') {
+                setSemesters(semesters.map(sem => {
+                  if (sem.semester === '1st Semester') return { ...sem, semester: '1st Trimester' };
+                  return sem;
+                }));
+              }
+            }}
+            className="w-full mt-10 bg-[#0F172A] text-white rounded-xl py-3.5 px-4 font-medium flex items-center justify-center gap-2 hover:bg-[#1E293B] transition-colors shadow-sm"
+          >
+            Start Calculating
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#0F172A] font-sans selection:bg-[#CBD5E1] selection:text-[#0F172A]">
-      {/* Header */}
       <header className="sticky top-0 z-10 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-[#E2E8F0]">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -225,6 +356,12 @@ export function App() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSettings({...settings, setupCompleted: false})}
+              className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors"
+            >
+              Settings
+            </button>
             <button
               onClick={resetCalculator}
               className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors"
@@ -240,14 +377,21 @@ export function App() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8 md:py-12">
+        {!settings.includeSummer && semesters.some(s => s.semester === 'Summer') && (
+           <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-[14px] flex items-start gap-3">
+             <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+             <p className="text-[14px] text-amber-800">
+               <strong>Note:</strong> You have selected to exclude Summer Term grades from your Cumulative GWA. Summer units and grades are shown below but are not factored into the total calculation.
+             </p>
+           </div>
+        )}
+
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-          {/* Left Panel: Spreadsheets */}
           <div className="flex-1 w-full flex flex-col gap-6">
             {semesters.map((semesterData, index) => (
-              <div key={semesterData.id} className="bg-[#FCFCFD] border border-[#E2E8F0] rounded-[14px] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.02)] overflow-hidden">
-                <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0] bg-white">
+              <div key={semesterData.id} className={`bg-[#FCFCFD] border rounded-[14px] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.02)] overflow-hidden ${!settings.includeSummer && semesterData.semester === 'Summer' ? 'border-amber-200' : 'border-[#E2E8F0]'}`}>
+                <div className={`flex items-center justify-between p-4 border-b bg-white ${!settings.includeSummer && semesterData.semester === 'Summer' ? 'border-amber-200' : 'border-[#E2E8F0]'}`}>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-4">
                       <select
@@ -255,9 +399,9 @@ export function App() {
                         onChange={(e) => updateSemesterDetails(semesterData.id, 'year', e.target.value)}
                         className={`bg-[#F8FAFC] border ${
                           duplicateSemesters[`${semesterData.year} - ${semesterData.semester}`] > 1 
-                          ? 'border-amber-400 focus:border-amber-500 text-amber-600' 
+                          ? 'border-amber-400 focus:border-amber-500' 
                           : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
-                        } rounded-md px-3 py-1.5 text-[14px] outline-none transition-all cursor-pointer font-medium`}
+                        } rounded-md px-3 py-1.5 text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium`}
                       >
                         <option>1st Year</option>
                         <option>2nd Year</option>
@@ -271,13 +415,24 @@ export function App() {
                         onChange={(e) => updateSemesterDetails(semesterData.id, 'semester', e.target.value)}
                         className={`bg-[#F8FAFC] border ${
                           duplicateSemesters[`${semesterData.year} - ${semesterData.semester}`] > 1 
-                          ? 'border-amber-400 focus:border-amber-500 text-amber-600' 
+                          ? 'border-amber-400 focus:border-amber-500' 
                           : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
-                        } rounded-md px-3 py-1.5 text-[14px] outline-none transition-all cursor-pointer font-medium`}
+                        } rounded-md px-3 py-1.5 text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium`}
                       >
-                        <option>1st Semester</option>
-                        <option>2nd Semester</option>
-                        <option>Summer</option>
+                        {settings.systemType === 'trimester' ? (
+                          <>
+                            <option>1st Trimester</option>
+                            <option>2nd Trimester</option>
+                            <option>3rd Trimester</option>
+                            <option>Summer</option>
+                          </>
+                        ) : (
+                          <>
+                            <option>1st Semester</option>
+                            <option>2nd Semester</option>
+                            <option>Summer</option>
+                          </>
+                        )}
                       </select>
                     </div>
                     {duplicateSemesters[`${semesterData.year} - ${semesterData.semester}`] > 1 && (
@@ -319,7 +474,7 @@ export function App() {
                       {semesterData.subjects.map((subject) => (
                         <tr
                           key={subject.id}
-                          className="group hover:bg-[#F8FAFC]/50 transition-colors"
+                          className={`group hover:bg-[#F8FAFC]/50 transition-colors ${!settings.includeSummer && semesterData.semester === 'Summer' ? 'opacity-60 grayscale-[50%]' : ''}`}
                         >
                           <td className="px-5 py-3">
                             <div className="relative">
@@ -402,7 +557,7 @@ export function App() {
                     </tbody>
                   </table>
                 </div>
-                <div className="p-4 border-t border-[#E2E8F0] bg-[#FAFAFA]">
+                <div className={`p-4 border-t bg-[#FAFAFA] ${!settings.includeSummer && semesterData.semester === 'Summer' ? 'border-amber-200 bg-amber-50/50' : 'border-[#E2E8F0]'}`}>
                   <button
                     onClick={() => addSubject(semesterData.id)}
                     className="flex items-center gap-2 text-[13px] font-medium text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm rounded-lg px-4 py-2 transition-all"
@@ -419,11 +574,10 @@ export function App() {
               className="mt-2 flex items-center justify-center gap-2 w-full py-4 text-[14px] font-medium text-[#64748B] bg-transparent border-2 border-dashed border-[#E2E8F0] hover:border-[#CBD5E1] hover:text-[#0F172A] rounded-[14px] transition-all"
             >
               <Plus className="w-4 h-4" />
-              Add Another Semester
+              Add Another Term
             </button>
           </div>
 
-          {/* Right Panel: Sticky Preview */}
           <div className="w-full lg:w-[340px] shrink-0 lg:sticky lg:top-24">
             <div className="bg-[#FCFCFD] border border-[#E2E8F0] rounded-[14px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] p-8 flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center mb-6">
@@ -439,20 +593,20 @@ export function App() {
               <div className="w-full h-px bg-[#E2E8F0] mb-8"></div>
 
               <div className="w-full flex justify-between items-center mb-4">
-                <span className="text-[14px] text-[#64748B]">Total Units</span>
+                <span className="text-[14px] text-[#64748B]">Valid Units</span>
                 <span className="text-[15px] font-medium text-[#0F172A]">
                   {totalUnits}
                 </span>
               </div>
               <div className="w-full flex justify-between items-center">
-                <span className="text-[14px] text-[#64748B]">Subjects</span>
+                <span className="text-[14px] text-[#64748B]">Counted Subjects</span>
                 <span className="text-[15px] font-medium text-[#0F172A]">
                   {totalSubjects}
                 </span>
               </div>
             </div>
             <p className="text-center text-[12px] text-[#64748B] mt-6">
-              Calculated automatically as you type across all semesters.
+              Calculated automatically across all active terms.
             </p>
           </div>
         </div>
