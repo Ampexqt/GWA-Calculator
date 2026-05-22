@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   Calculator,
   RotateCcw,
@@ -46,7 +46,32 @@ const INITIAL_SUBJECTS: Subject[] = [
 }];
 
 export function App() {
-  const [subjects, setSubjects] = useState<Subject[]>(INITIAL_SUBJECTS);
+  const [subjects, setSubjects] = useState<Subject[]>(() => {
+    const saved = localStorage.getItem('gwa-calculator-data');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const now = new Date().getTime();
+        // Check if the data is less than 3 hours old (3 * 60 * 60 * 1000 ms = 10800000 ms)
+        if (now - parsed.timestamp < 10800000) {
+          return parsed.data;
+        } else {
+          localStorage.removeItem('gwa-calculator-data');
+        }
+      } catch (e) {
+        return INITIAL_SUBJECTS;
+      }
+    }
+    return INITIAL_SUBJECTS;
+  });
+
+  useEffect(() => {
+    const dataToSave = {
+      data: subjects,
+      timestamp: new Date().getTime()
+    };
+    localStorage.setItem('gwa-calculator-data', JSON.stringify(dataToSave));
+  }, [subjects]);
   const addSubject = () => {
     setSubjects([
     ...subjects,
