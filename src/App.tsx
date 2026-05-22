@@ -53,7 +53,7 @@ export function App() {
     {
       id: crypto.randomUUID(),
       name: '',
-      units: '',
+      units: 3,
       grade: ''
     }]
     );
@@ -82,7 +82,7 @@ export function App() {
     {
       id: crypto.randomUUID(),
       name: '',
-      units: '',
+      units: 3,
       grade: ''
     }]
     );
