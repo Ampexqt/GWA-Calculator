@@ -170,9 +170,12 @@ export function App() {
                           <input
                           type="text"
                           value={subject.name}
-                          onChange={(e) =>
-                          updateSubject(subject.id, 'name', e.target.value)
-                          }
+                          maxLength={100}
+                          onChange={(e) => {
+                            if (e.target.value.length <= 100) {
+                              updateSubject(subject.id, 'name', e.target.value);
+                            }
+                          }}
                           placeholder="e.g. The Contemporary World"
                           className="w-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm" />
                         
@@ -181,9 +184,12 @@ export function App() {
                           <input
                           type="number"
                           value={subject.units}
-                          onChange={(e) =>
-                          updateSubject(subject.id, 'units', e.target.value)
-                          }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === '' || (Number(val) >= 0 && Number(val) <= 20)) {
+                              updateSubject(subject.id, 'units', val);
+                            }
+                          }}
                           placeholder="0"
                           min="0"
                           step="0.5"
@@ -194,9 +200,21 @@ export function App() {
                           <input
                           type="number"
                           value={subject.grade}
-                          onChange={(e) =>
-                          updateSubject(subject.id, 'grade', e.target.value)
-                          }
+                          onChange={(e) => {
+                            let val = e.target.value.replace(',', '.');
+                            val = val.replace(/[^\d.]/g, '');
+                            const parts = val.split('.');
+                            if (parts.length > 2) return;
+                            const digits = val.replace('.', '');
+                            if (digits.length > 3) return;
+                            if (!val.includes('.') && val.length >= 2) {
+                              val = val.substring(0, 1) + '.' + val.substring(1);
+                            }
+                            if (val !== '' && val !== '.') {
+                              if (Number(val) > 5) return;
+                            }
+                            updateSubject(subject.id, 'grade', val);
+                          }}
                           placeholder="0.00"
                           min="1.0"
                           max="5.0"
