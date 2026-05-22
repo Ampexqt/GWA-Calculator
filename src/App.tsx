@@ -173,7 +173,7 @@ export function App() {
                           onChange={(e) =>
                           updateSubject(subject.id, 'name', e.target.value)
                           }
-                          placeholder="e.g. Mathematics"
+                          placeholder="e.g. The Contemporary World"
                           className="w-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm" />
                         
                         </td>
