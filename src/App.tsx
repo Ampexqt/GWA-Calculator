@@ -5,7 +5,8 @@ import {
   Download,
   Plus,
   Trash2,
-  BookOpen
+  BookOpen,
+  AlertTriangle
 } from 'lucide-react';
 
 interface Subject {
@@ -81,12 +82,34 @@ export function App() {
   }, [semesters]);
 
   const addSemester = () => {
+    let nextYear = '1st Year';
+    let nextSemester = '1st Semester';
+
+    if (semesters.length > 0) {
+      const lastSem = semesters[semesters.length - 1];
+      nextYear = lastSem.year;
+      
+      if (lastSem.semester === '1st Semester') {
+        nextSemester = '2nd Semester';
+      } else {
+        nextSemester = '1st Semester';
+        const yearMatch = lastSem.year.match(/^(\d)/);
+        if (yearMatch) {
+          const nextYearNum = parseInt(yearMatch[1], 10) + 1;
+          if (nextYearNum === 2) nextYear = '2nd Year';
+          else if (nextYearNum === 3) nextYear = '3rd Year';
+          else if (nextYearNum === 4) nextYear = '4th Year';
+          else if (nextYearNum >= 5) nextYear = '5th Year';
+        }
+      }
+    }
+
     setSemesters([
       ...semesters,
       {
         id: crypto.randomUUID(),
-        year: '1st Year',
-        semester: '1st Semester',
+        year: nextYear,
+        semester: nextSemester,
         subjects: [{ id: crypto.randomUUID(), name: '', units: 3, grade: '' }]
       }
     ]);
@@ -166,6 +189,28 @@ export function App() {
     };
   }, [semesters]);
 
+  const duplicateSubjects = useMemo(() => {
+    const counts: Record<string, number> = {};
+    semesters.forEach(sem => {
+      sem.subjects.forEach(sub => {
+        const name = sub.name.trim().toLowerCase();
+        if (name) {
+          counts[name] = (counts[name] || 0) + 1;
+        }
+      });
+    });
+    return counts;
+  }, [semesters]);
+
+  const duplicateSemesters = useMemo(() => {
+    const counts: Record<string, number> = {};
+    semesters.forEach(sem => {
+      const key = `${sem.year} - ${sem.semester}`;
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return counts;
+  }, [semesters]);
+
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#0F172A] font-sans selection:bg-[#CBD5E1] selection:text-[#0F172A]">
       {/* Header */}
@@ -204,27 +249,43 @@ export function App() {
               <div key={semesterData.id} className="bg-[#FCFCFD] border border-[#E2E8F0] rounded-[14px] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.02)] overflow-hidden">
                 <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0] bg-white">
                   <div className="flex items-center gap-4">
-                    <select
-                      value={semesterData.year}
-                      onChange={(e) => updateSemesterDetails(semesterData.id, 'year', e.target.value)}
-                      className="bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-1.5 text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium"
-                    >
-                      <option>1st Year</option>
-                      <option>2nd Year</option>
-                      <option>3rd Year</option>
-                      <option>4th Year</option>
-                      <option>5th Year</option>
-                    </select>
-                    <span className="text-[#94A3B8]">—</span>
-                    <select
-                      value={semesterData.semester}
-                      onChange={(e) => updateSemesterDetails(semesterData.id, 'semester', e.target.value)}
-                      className="bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-1.5 text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium"
-                    >
-                      <option>1st Semester</option>
-                      <option>2nd Semester</option>
-                      <option>Summer</option>
-                    </select>
+                    <div className="flex items-center gap-4">
+                      <select
+                        value={semesterData.year}
+                        onChange={(e) => updateSemesterDetails(semesterData.id, 'year', e.target.value)}
+                        className={`bg-[#F8FAFC] border ${
+                          duplicateSemesters[`${semesterData.year} - ${semesterData.semester}`] > 1 
+                          ? 'border-amber-400 focus:border-amber-500 text-amber-600' 
+                          : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
+                        } rounded-md px-3 py-1.5 text-[14px] outline-none transition-all cursor-pointer font-medium`}
+                      >
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>4th Year</option>
+                        <option>5th Year</option>
+                      </select>
+                      <span className="text-[#94A3B8]">—</span>
+                      <select
+                        value={semesterData.semester}
+                        onChange={(e) => updateSemesterDetails(semesterData.id, 'semester', e.target.value)}
+                        className={`bg-[#F8FAFC] border ${
+                          duplicateSemesters[`${semesterData.year} - ${semesterData.semester}`] > 1 
+                          ? 'border-amber-400 focus:border-amber-500 text-amber-600' 
+                          : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
+                        } rounded-md px-3 py-1.5 text-[14px] outline-none transition-all cursor-pointer font-medium`}
+                      >
+                        <option>1st Semester</option>
+                        <option>2nd Semester</option>
+                        <option>Summer</option>
+                      </select>
+                    </div>
+                    {duplicateSemesters[`${semesterData.year} - ${semesterData.semester}`] > 1 && (
+                      <div className="flex items-center gap-1.5 text-[13px] font-medium text-amber-500 bg-amber-50 px-2 py-1 rounded-md" title="Duplicate semester detected">
+                        <AlertTriangle className="w-4 h-4" />
+                        <span className="hidden sm:inline">Duplicate</span>
+                      </div>
+                    )}
                   </div>
                   {semesters.length > 1 && (
                     <button
@@ -261,18 +322,29 @@ export function App() {
                           className="group hover:bg-[#F8FAFC]/50 transition-colors"
                         >
                           <td className="px-5 py-3">
-                            <input
-                              type="text"
-                              value={subject.name}
-                              maxLength={100}
-                              onChange={(e) => {
-                                if (e.target.value.length <= 100) {
-                                  updateSubject(semesterData.id, subject.id, 'name', e.target.value);
-                                }
-                              }}
-                              placeholder="e.g. The Contemporary World"
-                              className="w-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm"
-                            />
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={subject.name}
+                                maxLength={100}
+                                onChange={(e) => {
+                                  if (e.target.value.length <= 100) {
+                                    updateSubject(semesterData.id, subject.id, 'name', e.target.value);
+                                  }
+                                }}
+                                placeholder="e.g. The Contemporary World"
+                                className={`w-full bg-white border ${
+                                  duplicateSubjects[subject.name.trim().toLowerCase()] > 1 
+                                  ? 'border-amber-400 focus:border-amber-500 pr-10' 
+                                  : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
+                                } rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm`}
+                              />
+                              {duplicateSubjects[subject.name.trim().toLowerCase()] > 1 && (
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-500" title="Duplicate subject detected">
+                                  <AlertTriangle className="w-4 h-4" />
+                                </div>
+                              )}
+                            </div>
                           </td>
                           <td className="px-5 py-3">
                             <input
