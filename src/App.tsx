@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { Calculator, RotateCcw, Download, Plus, AlertTriangle } from 'lucide-react';
 
 import { SemesterData, Settings, Subject } from './types';
@@ -9,6 +9,15 @@ import { SemesterCard } from './components/SemesterCard';
 import { CumulativeGwaCard } from './components/CumulativeGwaCard';
 
 export function App() {
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (message: string) => {
+    setToast(message);
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
+
   const [settings, setSettings] = useState<Settings>(() => {
     const saved = localStorage.getItem('gwa-calculator-data');
     if (saved) {
@@ -51,15 +60,29 @@ export function App() {
   });
 
   useEffect(() => {
-    const dataToSave = {
-      data: semesters,
-      settings: settings,
-      timestamp: new Date().getTime()
-    };
-    localStorage.setItem('gwa-calculator-data', JSON.stringify(dataToSave));
+    const timer = setTimeout(() => {
+      const dataToSave = {
+        data: semesters,
+        settings: settings,
+        timestamp: new Date().getTime()
+      };
+      localStorage.setItem('gwa-calculator-data', JSON.stringify(dataToSave));
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, [semesters, settings]);
 
+  const lastActionTime = useRef<number>(0);
+  const checkThrottle = (delay = 200) => {
+    const now = Date.now();
+    if (now - lastActionTime.current < delay) return false;
+    lastActionTime.current = now;
+    return true;
+  };
+
   const addSemester = () => {
+    if (!checkThrottle(300)) return;
+    
     let nextYear = '1st Year';
     let nextSemester = settings.systemType === 'trimester' ? '1st Trimester' : '1st Semester';
 
@@ -112,6 +135,7 @@ export function App() {
   };
 
   const removeSemester = (semesterId: string) => {
+    if (!checkThrottle()) return;
     setSemesters(semesters.filter(s => s.id !== semesterId));
   };
 
@@ -120,6 +144,7 @@ export function App() {
   };
 
   const addSubject = (semesterId: string) => {
+    if (!checkThrottle(150)) return;
     setSemesters(semesters.map(s => {
       if (s.id === semesterId) {
         return { ...s, subjects: [...s.subjects, { id: crypto.randomUUID(), name: '', units: 3, grade: '' }] };
@@ -141,6 +166,7 @@ export function App() {
   };
 
   const removeSubject = (semesterId: string, subjectId: string) => {
+    if (!checkThrottle(150)) return;
     setSemesters(semesters.map(s => {
       if (s.id === semesterId) {
         return { ...s, subjects: s.subjects.filter(sub => sub.id !== subjectId) };
@@ -246,7 +272,10 @@ export function App() {
               <RotateCcw className="w-3.5 h-3.5" />
               Reset
             </button>
-            <button className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm rounded-lg transition-all">
+            <button 
+              onClick={() => showToast("Export feature is coming soon!")}
+              className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm rounded-lg transition-all"
+            >
               <Download className="w-3.5 h-3.5" />
               Export
             </button>
@@ -313,6 +342,12 @@ export function App() {
           />
         </div>
       </main>
+
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0F172A] text-white px-4 py-2.5 rounded-[10px] text-[13px] font-medium shadow-lg z-50 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
