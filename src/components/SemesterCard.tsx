@@ -92,39 +92,37 @@ export function SemesterCard({
           </button>
         )}
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-              <th className="px-5 py-3.5 text-[12px] font-medium text-[#64748B] uppercase tracking-wider w-[50%]">
-                Subject
-              </th>
-              <th className="px-5 py-3.5 text-[12px] font-medium text-[#64748B] uppercase tracking-wider w-[20%]">
-                Units
-              </th>
-              <th className="px-5 py-3.5 text-[12px] font-medium text-[#64748B] uppercase tracking-wider w-[20%]">
-                Grade
-              </th>
-              <th className="px-5 py-3.5 text-[12px] font-medium text-[#64748B] uppercase tracking-wider w-[10%] text-center">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#E2E8F0]">
-            {semesterData.subjects.map((subject) => (
-              <SubjectRow
-                key={subject.id}
-                subject={subject}
-                semesterId={semesterData.id}
-                semesterName={semesterData.semester}
-                settings={settings}
-                isDuplicate={duplicateSubjects[subject.name.trim().toLowerCase()] > 1}
-                updateSubject={updateSubject}
-                removeSubject={removeSubject}
-              />
-            ))}
-          </tbody>
-        </table>
+      <div className="flex flex-col">
+        <div className="hidden sm:flex items-center border-b border-[#E2E8F0] bg-[#F8FAFC] px-5 py-3.5">
+          <div className="w-[50%] text-[12px] font-medium text-[#64748B] uppercase tracking-wider pr-5">
+            Subject
+          </div>
+          <div className="flex w-[50%]">
+            <div className="w-[40%] text-[12px] font-medium text-[#64748B] uppercase tracking-wider text-center px-2">
+              Units
+            </div>
+            <div className="w-[40%] text-[12px] font-medium text-[#64748B] uppercase tracking-wider text-center px-2">
+              Grade
+            </div>
+            <div className="w-[20%] text-[12px] font-medium text-[#64748B] uppercase tracking-wider text-center">
+              Action
+            </div>
+          </div>
+        </div>
+        <div className="divide-y divide-[#E2E8F0]">
+          {semesterData.subjects.map((subject) => (
+            <SubjectRow
+              key={subject.id}
+              subject={subject}
+              semesterId={semesterData.id}
+              semesterName={semesterData.semester}
+              settings={settings}
+              isDuplicate={duplicateSubjects[subject.name.trim().toLowerCase()] > 1}
+              updateSubject={updateSubject}
+              removeSubject={removeSubject}
+            />
+          ))}
+        </div>
       </div>
       <div className={`flex items-center justify-between p-4 border-t bg-[#FAFAFA] ${isExcludedSummer ? 'border-amber-200 bg-amber-50/50' : 'border-[#E2E8F0]'}`}>
         <button
