@@ -15,8 +15,8 @@ export function SubjectRow({ subject, semesterId, semesterName, settings, isDupl
   const isExcludedSummer = !settings.includeSummer && semesterName === 'Summer';
 
   return (
-    <tr className={`group hover:bg-[#F8FAFC]/50 transition-colors ${isExcludedSummer ? 'opacity-60 grayscale-[50%]' : ''}`}>
-      <td className="px-5 py-3">
+    <div className={`group flex flex-col sm:flex-row sm:items-center px-4 py-4 sm:px-5 sm:py-3 gap-3 sm:gap-0 hover:bg-[#F8FAFC]/50 transition-colors ${isExcludedSummer ? 'opacity-60 grayscale-[50%]' : ''}`}>
+      <div className="w-full sm:w-[50%] sm:pr-5">
         <div className="relative">
           <input
             type="text"
@@ -39,58 +39,63 @@ export function SubjectRow({ subject, semesterId, semesterName, settings, isDupl
             </div>
           )}
         </div>
-      </td>
-      <td className="px-5 py-3">
-        <input
-          type="number"
-          value={subject.units}
-          onChange={(e) => {
-            const val = e.target.value;
-            if (val === '' || (Number(val) >= 0 && Number(val) <= 20)) {
-              updateSubject(semesterId, subject.id, 'units', val);
-            }
-          }}
-          placeholder="0"
-          min="0"
-          step="0.5"
-          className="w-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm"
-        />
-      </td>
-      <td className="px-5 py-3">
-        <input
-          type="number"
-          value={subject.grade}
-          onChange={(e) => {
-            let val = e.target.value.replace(',', '.');
-            val = val.replace(/[^\d.]/g, '');
-            const parts = val.split('.');
-            if (parts.length > 2) return;
-            const digits = val.replace('.', '');
-            if (digits.length > 3) return;
-            if (!val.includes('.') && val.length >= 2) {
-              val = val.substring(0, 1) + '.' + val.substring(1);
-            }
-            if (val !== '' && val !== '.') {
-              if (Number(val) > 5) return;
-            }
-            updateSubject(semesterId, subject.id, 'grade', val);
-          }}
-          placeholder="0.00"
-          min="1.0"
-          max="5.0"
-          step="0.25"
-          className="w-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm"
-        />
-      </td>
-      <td className="px-5 py-3 text-center">
-        <button
-          onClick={() => removeSubject(semesterId, subject.id)}
-          className="p-2 text-[#94A3B8] hover:text-[#0F172A] hover:bg-[#E2E8F0] rounded-md transition-colors mx-auto block"
-          aria-label="Remove subject"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </td>
-    </tr>
+      </div>
+      
+      <div className="flex items-start sm:items-center gap-3 w-full sm:w-[50%]">
+        <div className="flex-1 sm:w-[40%] sm:flex-none sm:px-2">
+          <label className="sm:hidden text-[11px] font-medium text-[#64748B] uppercase mb-1.5 block">Units</label>
+          <input
+            type="number"
+            value={subject.units}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === '' || (Number(val) >= 0 && Number(val) <= 20)) {
+                updateSubject(semesterId, subject.id, 'units', val);
+              }
+            }}
+            placeholder="0"
+            min="0"
+            step="0.5"
+            className="w-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm sm:text-center"
+          />
+        </div>
+        <div className="flex-1 sm:w-[40%] sm:flex-none sm:px-2">
+          <label className="sm:hidden text-[11px] font-medium text-[#64748B] uppercase mb-1.5 block">Grade</label>
+          <input
+            type="number"
+            value={subject.grade}
+            onChange={(e) => {
+              let val = e.target.value.replace(',', '.');
+              val = val.replace(/[^\d.]/g, '');
+              const parts = val.split('.');
+              if (parts.length > 2) return;
+              const digits = val.replace('.', '');
+              if (digits.length > 3) return;
+              if (!val.includes('.') && val.length >= 2) {
+                val = val.substring(0, 1) + '.' + val.substring(1);
+              }
+              if (val !== '' && val !== '.') {
+                if (Number(val) > 5) return;
+              }
+              updateSubject(semesterId, subject.id, 'grade', val);
+            }}
+            placeholder="0.00"
+            min="1.0"
+            max="5.0"
+            step="0.25"
+            className="w-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm sm:text-center"
+          />
+        </div>
+        <div className="w-auto sm:w-[20%] sm:flex-none flex justify-center pt-[22px] sm:pt-0">
+          <button
+            onClick={() => removeSubject(semesterId, subject.id)}
+            className="p-2 text-[#94A3B8] hover:text-[#0F172A] hover:bg-[#E2E8F0] rounded-md transition-colors mx-auto block"
+            aria-label="Remove subject"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
