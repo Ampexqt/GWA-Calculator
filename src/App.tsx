@@ -249,41 +249,41 @@ export function App() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#0F172A] font-sans selection:bg-[#CBD5E1] selection:text-[#0F172A]">
       <header className="sticky top-0 z-10 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-[#E2E8F0]">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-[10px] bg-[#111827] flex items-center justify-center text-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 rounded-[10px] bg-[#111827] flex items-center justify-center text-white shadow-sm shrink-0">
               <Calculator className="w-4 h-4" />
             </div>
-            <h1 className="font-semibold text-[15px] tracking-tight">
+            <h1 className="font-semibold text-[14px] sm:text-[15px] tracking-tight truncate">
               GWA Calculator
             </h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <button
               onClick={() => setSettings({ ...settings, setupCompleted: false })}
-              className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors"
+              className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors"
             >
               Settings
             </button>
             <button
               onClick={resetCalculator}
-              className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors"
+              className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              Reset
+              <span className="hidden sm:inline">Reset</span>
             </button>
             <button 
               onClick={() => showToast("Export feature is coming soon!")}
-              className="flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm rounded-lg transition-all"
+              className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-[13px] font-medium text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm rounded-lg transition-all"
             >
               <Download className="w-3.5 h-3.5" />
-              Export
+              <span className="hidden sm:inline">Export</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8 md:py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 md:py-12">
         {!settings.includeSummer && semesters.some(s => s.semester === 'Summer') && (
           <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-[14px] flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
