@@ -1,6 +1,7 @@
 import { AlertTriangle, Trash2, Plus } from 'lucide-react';
 import { SemesterData, Settings, Subject } from '../types';
 import { SubjectRow } from './SubjectRow';
+import { CustomSelect } from './CustomSelect';
 
 interface SemesterCardProps {
   semesterData: SemesterData;
@@ -36,44 +37,21 @@ export function SemesterCard({
       <div className={`flex items-center justify-between p-3 sm:p-4 border-b bg-white ${isExcludedSummer ? 'border-amber-200' : 'border-[#E2E8F0]'}`}>
         <div className="flex items-center gap-2 sm:gap-4">
           <div className="flex items-center gap-1.5 sm:gap-4">
-            <select
+            <CustomSelect
               value={semesterData.year}
-              onChange={(e) => updateSemesterDetails(semesterData.id, 'year', e.target.value)}
-              className={`bg-[#F8FAFC] border ${isDuplicateSemester
-                ? 'border-amber-400 focus:border-amber-500'
-                : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
-                } rounded-md px-2 sm:px-3 py-1.5 text-[13px] sm:text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium min-w-0`}
-            >
-              <option>1st Year</option>
-              <option>2nd Year</option>
-              <option>3rd Year</option>
-              <option>4th Year</option>
-              <option>5th Year</option>
-            </select>
+              onChange={(val) => updateSemesterDetails(semesterData.id, 'year', val)}
+              options={['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year']}
+              isError={isDuplicateSemester}
+            />
             <span className="text-[#94A3B8]">—</span>
-            <select
+            <CustomSelect
               value={semesterData.semester}
-              onChange={(e) => updateSemesterDetails(semesterData.id, 'semester', e.target.value)}
-              className={`bg-[#F8FAFC] border ${isDuplicateSemester
-                ? 'border-amber-400 focus:border-amber-500'
-                : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
-                } rounded-md px-2 sm:px-3 py-1.5 text-[13px] sm:text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium min-w-0`}
-            >
-              {settings.systemType === 'trimester' ? (
-                <>
-                  <option>1st Trimester</option>
-                  <option>2nd Trimester</option>
-                  <option>3rd Trimester</option>
-                  <option>Summer</option>
-                </>
-              ) : (
-                <>
-                  <option>1st Semester</option>
-                  <option>2nd Semester</option>
-                  <option>Summer</option>
-                </>
-              )}
-            </select>
+              onChange={(val) => updateSemesterDetails(semesterData.id, 'semester', val)}
+              options={settings.systemType === 'trimester' 
+                ? ['1st Trimester', '2nd Trimester', '3rd Trimester', 'Summer']
+                : ['1st Semester', '2nd Semester', 'Summer']}
+              isError={isDuplicateSemester}
+            />
           </div>
           {isDuplicateSemester && (
             <div className="flex items-center gap-1.5 text-[13px] font-medium text-amber-500 bg-amber-50 px-2 py-1 rounded-md" title="Duplicate semester detected">
