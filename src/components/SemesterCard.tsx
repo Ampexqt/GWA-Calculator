@@ -33,16 +33,16 @@ export function SemesterCard({
 
   return (
     <div className={`bg-[#FCFCFD] border rounded-[14px] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.02)] overflow-hidden ${isExcludedSummer ? 'border-amber-200' : 'border-[#E2E8F0]'}`}>
-      <div className={`flex items-center justify-between p-4 border-b bg-white ${isExcludedSummer ? 'border-amber-200' : 'border-[#E2E8F0]'}`}>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-4">
+      <div className={`flex items-center justify-between p-3 sm:p-4 border-b bg-white ${isExcludedSummer ? 'border-amber-200' : 'border-[#E2E8F0]'}`}>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1.5 sm:gap-4">
             <select
               value={semesterData.year}
               onChange={(e) => updateSemesterDetails(semesterData.id, 'year', e.target.value)}
               className={`bg-[#F8FAFC] border ${isDuplicateSemester
                 ? 'border-amber-400 focus:border-amber-500'
                 : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
-                } rounded-md px-3 py-1.5 text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium`}
+                } rounded-md px-2 sm:px-3 py-1.5 text-[13px] sm:text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium min-w-0`}
             >
               <option>1st Year</option>
               <option>2nd Year</option>
@@ -57,7 +57,7 @@ export function SemesterCard({
               className={`bg-[#F8FAFC] border ${isDuplicateSemester
                 ? 'border-amber-400 focus:border-amber-500'
                 : 'border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8]'
-                } rounded-md px-3 py-1.5 text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium`}
+                } rounded-md px-2 sm:px-3 py-1.5 text-[13px] sm:text-[14px] text-[#0F172A] outline-none transition-all cursor-pointer font-medium min-w-0`}
             >
               {settings.systemType === 'trimester' ? (
                 <>
@@ -124,15 +124,15 @@ export function SemesterCard({
           ))}
         </div>
       </div>
-      <div className={`flex items-center justify-between p-4 border-t bg-[#FAFAFA] ${isExcludedSummer ? 'border-amber-200 bg-amber-50/50' : 'border-[#E2E8F0]'}`}>
+      <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 gap-3 sm:gap-0 border-t bg-[#FAFAFA] ${isExcludedSummer ? 'border-amber-200 bg-amber-50/50' : 'border-[#E2E8F0]'}`}>
         <button
           onClick={() => addSubject(semesterData.id)}
-          className="flex items-center gap-2 text-[13px] font-medium text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm rounded-lg px-4 py-2 transition-all"
+          className="flex items-center gap-2 text-[13px] font-medium text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm rounded-lg px-4 py-2 transition-all w-full sm:w-auto justify-center"
         >
           <Plus className="w-4 h-4" />
           Add Subject
         </button>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
           <span className="text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Term GWA</span>
           <span className="text-[18px] font-light text-[#0F172A]">{semGwa === '0.0000' ? '- - -' : semGwa}</span>
         </div>
