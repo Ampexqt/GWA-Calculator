@@ -17,6 +17,7 @@ export const INITIAL_SEMESTERS: SemesterData[] = [
 
 export const DEFAULT_SETTINGS: Settings = {
   systemType: 'semestral',
+  gradingSystem: '1.0-5.0',
   includeSummer: true,
   setupCompleted: false
 };
