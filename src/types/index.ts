@@ -14,6 +14,7 @@ export interface SemesterData {
 
 export interface Settings {
   systemType: 'semestral' | 'trimester';
+  gradingSystem: '1.0-5.0' | '4.0-GPA' | 'percentage';
   includeSummer: boolean;
   setupCompleted: boolean;
 }
