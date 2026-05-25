@@ -135,9 +135,6 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
     semesters.forEach((sem) => {
       if (!settings.includeSummer && sem.semester === 'Summer') return;
 
-      doc.addPage();
-      currentY = 20;
-
       const title = `${sem.year} - ${sem.semester}`;
       
       const bodyData: any[] = sem.subjects.map(sub => {
@@ -170,6 +167,7 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
 
       autoTable(doc, {
         startY: currentY,
+        pageBreak: 'avoid',
         head: [
           [{ content: title, colSpan: 3, styles: { halign: 'left', fillColor: [15, 23, 42], textColor: 255 } }], 
           ['Subject Name', 'Units', 'Grade']
@@ -192,7 +190,7 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
       });
 
       // after table is drawn, get new Y
-      currentY = (doc as any).lastAutoTable.finalY + 10;
+      currentY = (doc as any).lastAutoTable.finalY + 15;
     });
 
     // Add Calculation Breakdown Page
