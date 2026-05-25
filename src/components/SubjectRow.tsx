@@ -69,20 +69,29 @@ export function SubjectRow({ subject, semesterId, semesterName, settings, isDupl
               val = val.replace(/[^\d.]/g, '');
               const parts = val.split('.');
               if (parts.length > 2) return;
-              const digits = val.replace('.', '');
-              if (digits.length > 3) return;
-              if (!val.includes('.') && val.length >= 2) {
-                val = val.substring(0, 1) + '.' + val.substring(1);
-              }
-              if (val !== '' && val !== '.') {
-                if (Number(val) > 5) return;
+              
+              if (settings.gradingSystem === 'percentage') {
+                if (val !== '' && val !== '.') {
+                  if (Number(val) > 100) return;
+                }
+                if (val.includes('.') && parts[1].length > 2) return;
+              } else {
+                const digits = val.replace('.', '');
+                if (digits.length > 3) return;
+                if (!val.includes('.') && val.length >= 2) {
+                  val = val.substring(0, 1) + '.' + val.substring(1);
+                }
+                if (val !== '' && val !== '.') {
+                  if (settings.gradingSystem === '4.0-GPA' && Number(val) > 4) return;
+                  if (settings.gradingSystem === '1.0-5.0' && Number(val) > 5) return;
+                }
               }
               updateSubject(semesterId, subject.id, 'grade', val);
             }}
-            placeholder="0.00"
-            min="1.0"
-            max="5.0"
-            step="0.25"
+            placeholder={settings.gradingSystem === 'percentage' ? "95" : (settings.gradingSystem === '4.0-GPA' ? "4.00" : "1.00")}
+            min={settings.gradingSystem === 'percentage' ? "0" : (settings.gradingSystem === '4.0-GPA' ? "0.0" : "1.0")}
+            max={settings.gradingSystem === 'percentage' ? "100" : (settings.gradingSystem === '4.0-GPA' ? "4.0" : "5.0")}
+            step={settings.gradingSystem === 'percentage' ? "1" : "0.25"}
             className="w-full min-w-0 bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] focus:border-[#94A3B8] rounded-md px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all shadow-sm sm:text-center"
           />
         </div>
