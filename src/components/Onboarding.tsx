@@ -97,7 +97,10 @@ export function Onboarding({ settings, setSettings, semesters, setSemesters }: O
                   </div>
                   {settings.systemType === 'semestral' && <CheckCircle2 className="w-5 h-5 text-[#0F172A]" />}
                 </div>
-                <h3 className="font-semibold text-[15px] text-[#0F172A] mb-1">Semestral</h3>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-[15px] text-[#0F172A]">Semestral</h3>
+                  <span className="text-[10px] font-bold tracking-wider uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Most Common</span>
+                </div>
                 <p className="text-[12px] text-[#64748B]">2 terms per year</p>
               </button>
               
@@ -135,7 +138,10 @@ export function Onboarding({ settings, setSettings, semesters, setSemesters }: O
                   <Star className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-[15px] text-[#0F172A]">Uno to Singko</h3>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="font-semibold text-[15px] text-[#0F172A]">Uno to Singko</h3>
+                    <span className="text-[10px] font-bold tracking-wider uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Most Common</span>
+                  </div>
                   <p className="text-[12px] text-[#64748B]">1.0 (Highest) to 5.0 (Fail)</p>
                 </div>
                 {settings.gradingSystem === '1.0-5.0' && <CheckCircle2 className="w-5 h-5 text-[#0F172A]" />}
