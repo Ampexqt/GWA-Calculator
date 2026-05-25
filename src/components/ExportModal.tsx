@@ -132,17 +132,11 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
       currentY = (doc as any).lastAutoTable.finalY + 15;
     }
 
-    let isFirstPage = true;
-
     semesters.forEach((sem) => {
       if (!settings.includeSummer && sem.semester === 'Summer') return;
 
-      if (!isFirstPage) {
-        doc.addPage();
-        currentY = 20;
-      } else {
-        isFirstPage = false;
-      }
+      doc.addPage();
+      currentY = 20;
 
       const title = `${sem.year} - ${sem.semester}`;
       
@@ -203,26 +197,52 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
 
     // Add Calculation Breakdown Page
     doc.addPage();
-    doc.setFontSize(14);
+    doc.setFontSize(16);
     doc.setTextColor(15, 23, 42);
     doc.setFont("helvetica", 'bold');
     doc.text("Calculation Breakdown", 14, 22);
 
     doc.setFontSize(10);
-    doc.setFont("helvetica", 'normal');
+    doc.setFont("helvetica", 'italic');
     doc.setTextColor(100, 116, 139);
-    doc.text("How your Cumulative GWA is calculated:", 14, 32);
+    doc.text("A step-by-step explanation of how your Cumulative GWA was computed.", 14, 30);
     
+    doc.setFontSize(12);
     doc.setFont("helvetica", 'bold');
     doc.setTextColor(15, 23, 42);
-    doc.text("Formula: Total Weighted Score ÷ Total Valid Units = Cumulative GWA", 14, 42);
+    doc.text("Step 1: Get the Weighted Score for every subject", 14, 42);
     
+    doc.setFontSize(10);
     doc.setFont("helvetica", 'normal');
-    doc.text(`1. Total Weighted Score (Sum of [Units × Grade] for all subjects): ${cumulativeWeighted.toFixed(4)}`, 14, 52);
-    doc.text(`2. Total Valid Units: ${cumulativeUnits}`, 14, 60);
-    
+    doc.setTextColor(100, 116, 139);
+    doc.text("Formula: (Subject Units) × (Subject Grade) = Weighted Score", 14, 48);
+    doc.text("Example: A 3-unit subject with a grade of 1.50 gives a weighted score of 4.50.", 14, 54);
+
+    doc.setFontSize(12);
     doc.setFont("helvetica", 'bold');
-    doc.text(`Calculation: ${cumulativeWeighted.toFixed(4)} ÷ ${cumulativeUnits} = ${finalGwa}`, 14, 70);
+    doc.setTextColor(15, 23, 42);
+    doc.text("Step 2: Add everything together", 14, 66);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Total sum of all Weighted Scores: ${cumulativeWeighted.toFixed(4)}`, 14, 72);
+    doc.text(`Total sum of all Valid Units: ${cumulativeUnits}`, 14, 78);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text("Step 3: Divide to find the final GWA", 14, 90);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", 'normal');
+    doc.setTextColor(100, 116, 139);
+    doc.text("Formula: (Total Weighted Score) ÷ (Total Valid Units) = Cumulative GWA", 14, 96);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text(`${cumulativeWeighted.toFixed(4)} ÷ ${cumulativeUnits} = ${finalGwa}`, 14, 106);
 
     doc.save('GWA_Record.pdf');
     onClose();
