@@ -85,6 +85,23 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
 
     const finalGwa = cumulativeUnits > 0 ? (cumulativeWeighted / cumulativeUnits).toFixed(4) : "0.0000";
 
+    const gwaVal = parseFloat(finalGwa);
+    let latinHonor = "";
+
+    if (settings.gradingSystem === '1.0-5.0') {
+      if (gwaVal >= 1.0 && gwaVal <= 1.20) latinHonor = "Summa Cum Laude";
+      else if (gwaVal > 1.20 && gwaVal <= 1.45) latinHonor = "Magna Cum Laude";
+      else if (gwaVal > 1.45 && gwaVal <= 1.75) latinHonor = "Cum Laude";
+    } else if (settings.gradingSystem === '4.0') {
+      if (gwaVal >= 3.80 && gwaVal <= 4.00) latinHonor = "Summa Cum Laude";
+      else if (gwaVal >= 3.60 && gwaVal < 3.80) latinHonor = "Magna Cum Laude";
+      else if (gwaVal >= 3.40 && gwaVal < 3.60) latinHonor = "Cum Laude";
+    } else if (settings.gradingSystem === 'percentage') {
+      if (gwaVal >= 98 && gwaVal <= 100) latinHonor = "Summa Cum Laude";
+      else if (gwaVal >= 95 && gwaVal < 98) latinHonor = "Magna Cum Laude";
+      else if (gwaVal >= 90 && gwaVal < 95) latinHonor = "Cum Laude";
+    }
+
     doc.setFontSize(10);
     doc.setTextColor(100, 116, 139); // #64748B
     doc.text(`Grading System: ${settings.gradingSystem}`, 14, 32);
@@ -92,9 +109,17 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
     doc.setTextColor(15, 23, 42); // #0F172A
     doc.setFont("helvetica", 'bold');
     doc.text(`Cumulative GWA: ${finalGwa}`, 14, 44);
+
+    let nextY = 50;
+    if (latinHonor && cumulativeUnits > 0) {
+      doc.setFont("helvetica", 'bold');
+      doc.text(`Academic Standing: Candidate for ${latinHonor}`, 14, nextY);
+      nextY += 8;
+    }
+
     doc.setFont("helvetica", 'normal');
 
-    let currentY = 56;
+    let currentY = nextY + 4;
 
     // Generate summary data
     const summaryData: any[] = [];
