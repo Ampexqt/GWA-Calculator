@@ -7,9 +7,11 @@ import { DEFAULT_SETTINGS, INITIAL_SEMESTERS } from './constants';
 import { Onboarding } from './components/Onboarding';
 import { SemesterCard } from './components/SemesterCard';
 import { CumulativeGwaCard } from './components/CumulativeGwaCard';
+import { ExportModal } from './components/ExportModal';
 
 export function App() {
   const [toast, setToast] = useState<string | null>(null);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -273,7 +275,7 @@ export function App() {
               <span className="hidden sm:inline">Reset</span>
             </button>
             <button 
-              onClick={() => showToast("Export feature is coming soon!")}
+              onClick={() => setIsExportModalOpen(true)}
               className="flex items-center gap-2 px-2 sm:px-3 py-1.5 text-[13px] font-medium text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] shadow-sm rounded-lg transition-all"
             >
               <Download className="w-3.5 h-3.5" />
@@ -348,6 +350,14 @@ export function App() {
           {toast}
         </div>
       )}
+
+      <ExportModal 
+        isOpen={isExportModalOpen} 
+        onClose={() => setIsExportModalOpen(false)} 
+        semesters={semesters}
+        settings={settings}
+        showToast={showToast}
+      />
     </div>
   );
 }
