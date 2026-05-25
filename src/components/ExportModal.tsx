@@ -1,6 +1,6 @@
 import { X, FileSpreadsheet, Download, FileText } from 'lucide-react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { SemesterData, Settings } from '../types';
 
 interface ExportModalProps {
@@ -129,7 +129,7 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
         styles: { halign: 'right', fontStyle: 'bold', fillColor: [248, 250, 252] } 
       }]);
 
-      (doc as any).autoTable({
+      autoTable(doc, {
         startY: currentY,
         head: [
           [{ content: title, colSpan: 3, styles: { halign: 'left', fillColor: [15, 23, 42], textColor: 255 } }], 
