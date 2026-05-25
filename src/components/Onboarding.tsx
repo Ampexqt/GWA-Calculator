@@ -91,17 +91,17 @@ export function Onboarding({ settings, setSettings, semesters, setSemesters }: O
                     : 'border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC]/60'
                 }`}
               >
-                <div className="flex justify-between items-start mb-3">
+                <div className="flex justify-between items-start mb-2">
                   <div className={`p-2 rounded-lg transition-colors ${settings.systemType === 'semestral' ? 'bg-[#0F172A] text-white' : 'bg-[#F1F5F9] text-[#64748B] group-hover:text-[#0F172A]'}`}>
                     <LayoutGrid className="w-4 h-4" />
                   </div>
                   {settings.systemType === 'semestral' && <CheckCircle2 className="w-5 h-5 text-[#0F172A]" />}
                 </div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-[15px] text-[#0F172A]">Semestral</h3>
-                  <span className="text-[10px] font-bold tracking-wider uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Most Common</span>
+                <h3 className="font-semibold text-[15px] text-[#0F172A] mb-0.5">Semestral</h3>
+                <p className="text-[12px] text-[#64748B] mb-2">2 terms per year</p>
+                <div>
+                  <span className="text-[9px] font-bold tracking-wider uppercase bg-[#0F172A] text-white px-2 py-0.5 rounded-md">Common Choice</span>
                 </div>
-                <p className="text-[12px] text-[#64748B]">2 terms per year</p>
               </button>
               
               <button
@@ -138,11 +138,11 @@ export function Onboarding({ settings, setSettings, semesters, setSemesters }: O
                   <Star className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="font-semibold text-[15px] text-[#0F172A]">Uno to Singko</h3>
-                    <span className="text-[10px] font-bold tracking-wider uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">Most Common</span>
+                  <h3 className="font-semibold text-[15px] text-[#0F172A] mb-0.5">Uno to Singko</h3>
+                  <p className="text-[12px] text-[#64748B] mb-2">1.0 (Highest) to 5.0 (Fail)</p>
+                  <div>
+                    <span className="text-[9px] font-bold tracking-wider uppercase bg-[#0F172A] text-white px-2 py-0.5 rounded-md">Common Choice</span>
                   </div>
-                  <p className="text-[12px] text-[#64748B]">1.0 (Highest) to 5.0 (Fail)</p>
                 </div>
                 {settings.gradingSystem === '1.0-5.0' && <CheckCircle2 className="w-5 h-5 text-[#0F172A]" />}
               </button>
@@ -195,7 +195,7 @@ export function Onboarding({ settings, setSettings, semesters, setSemesters }: O
                     : 'border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC]/60'
                 }`}
               >
-                <div className="flex justify-between items-start mb-3">
+                <div className="flex justify-between items-start mb-2">
                   <div className={`p-2 rounded-lg transition-colors ${settings.includeSummer ? 'bg-[#0F172A] text-white' : 'bg-[#F1F5F9] text-[#64748B] group-hover:text-[#0F172A]'}`}>
                     <Sun className="w-4 h-4" />
                   </div>
@@ -213,14 +213,17 @@ export function Onboarding({ settings, setSettings, semesters, setSemesters }: O
                     : 'border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-[#F8FAFC]/60'
                 }`}
               >
-                <div className="flex justify-between items-start mb-3">
+                <div className="flex justify-between items-start mb-2">
                   <div className={`p-2 rounded-lg transition-colors ${!settings.includeSummer ? 'bg-[#0F172A] text-white' : 'bg-[#F1F5F9] text-[#64748B] group-hover:text-[#0F172A]'}`}>
                     <Snowflake className="w-4 h-4" />
                   </div>
                   {!settings.includeSummer && <CheckCircle2 className="w-5 h-5 text-[#0F172A]" />}
                 </div>
-                <h3 className="font-semibold text-[15px] text-[#0F172A] mb-1">Exclude</h3>
-                <p className="text-[12px] text-[#64748B]">Ignore summer terms</p>
+                <h3 className="font-semibold text-[15px] text-[#0F172A] mb-0.5">Exclude</h3>
+                <p className="text-[12px] text-[#64748B] mb-2">Ignore summer terms</p>
+                <div>
+                  <span className="text-[9px] font-bold tracking-wider uppercase bg-[#0F172A] text-white px-2 py-0.5 rounded-md">Common Choice</span>
+                </div>
               </button>
             </div>
           )}
