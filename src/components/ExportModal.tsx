@@ -92,7 +92,7 @@ export function ExportModal({ isOpen, onClose, semesters, settings, showToast }:
       if (gwaVal >= 1.0 && gwaVal <= 1.20) latinHonor = "Summa Cum Laude";
       else if (gwaVal > 1.20 && gwaVal <= 1.45) latinHonor = "Magna Cum Laude";
       else if (gwaVal > 1.45 && gwaVal <= 1.75) latinHonor = "Cum Laude";
-    } else if (settings.gradingSystem === '4.0') {
+    } else if (settings.gradingSystem === '4.0-GPA') {
       if (gwaVal >= 3.80 && gwaVal <= 4.00) latinHonor = "Summa Cum Laude";
       else if (gwaVal >= 3.60 && gwaVal < 3.80) latinHonor = "Magna Cum Laude";
       else if (gwaVal >= 3.40 && gwaVal < 3.60) latinHonor = "Cum Laude";
