@@ -25,11 +25,15 @@
 
 ## ✨ Features
 
-- **Live Calculation:** Instantly calculates your GWA as you add subjects, units, and grades.
-- **Dynamic Table:** Easily add, edit, or remove subjects with a smooth and intuitive spreadsheet-like interface.
-- **Modern UI/UX:** A clean, responsive design inspired by modern web standards, featuring glassmorphism elements and beautiful typography.
-- **Data Export (WIP):** Capability to export your grades.
-- **Reset functionality:** Start over with a single click.
+- **Multi-Term Tracking:** Add, edit, and organize multiple semesters or trimesters seamlessly.
+- **Smart Grading Systems:** Supports "Uno to Singko" (1.0-5.0), American GPA (4.0), and Percentage (90-100) systems.
+- **Live Calculation:** Instantly calculates your Term GWA and Cumulative GWA as you type.
+- **Latin Honors Detection:** Automatically checks your Cumulative GWA against CHED/University standards and displays if you are a candidate for Summa, Magna, or Cum Laude.
+- **Advanced Exporting:** 
+  - **PDF Transcripts:** Generate a beautiful, print-ready academic record complete with a Term-by-Term Overview and a step-by-step Calculation Breakdown.
+  - **CSV Spreadsheets:** Download raw data for use in Excel or Google Sheets.
+- **Modern UI/UX:** A clean, responsive design inspired by modern web standards, featuring a clean black-and-white color palette and beautiful typography.
+- **Privacy First:** All data is saved locally on your device. No servers, no accounts needed.
 
 ## 🚀 Getting Started
 
@@ -70,6 +74,7 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 * **[Vite](https://vitejs.dev/)** - Frontend Tooling
 * **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
 * **[Lucide React](https://lucide.dev/)** - Beautiful and consistent icons
+* **[jsPDF](https://github.com/parallax/jsPDF) & [jsPDF-AutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable)** - For generating pixel-perfect PDF exports
 * **[TypeScript](https://www.typescriptlang.org/)** - Strongly typed programming language
 
 ## 🤝 Contributing
